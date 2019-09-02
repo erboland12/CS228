@@ -1,4 +1,5 @@
 import pygame
+
 from constants import pygameWindowDepth, pygameWindowWidth
 
 white = [255, 255, 255]
