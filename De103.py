@@ -37,7 +37,7 @@ yMax = -1000.0
 def handleFrame(frame):
     global x, y, xMin, xMax, yMin, yMax, tip, pygameWindowWidth, pygameWindowDepth
     x = int(tip[0])
-    y = int(tip[1])
+    y = int(tip[2])
 
     if x < xMin:
         xMin = x
@@ -47,12 +47,6 @@ def handleFrame(frame):
         yMin = y
     if y > yMax:
         yMax = y
-
-    print x
-    print frame
-    print xMax, xMin, yMax, yMin
-
-
 
 
 def Scale(value, dMin, dMax, min, max):
@@ -75,28 +69,55 @@ def Scale(value, dMin, dMax, min, max):
             scaledValue = (((value - dMin) * newRange) / oldRange) + min
             return scaledValue
 
+def handleFinger(f):
+    for b in range(0, 4):
+        if b == 0:
+            handleBone(f.bone(b), 4)
+        elif b == 1:
+            handleBone(f.bone(b), 3)
+        elif b == 2:
+            handleBone(f.bone(b), 2)
+        elif b == 3:
+            handleBone(f.bone(b), 1)
 
+def handleBone(bone, b):
+    base = bone.prev_joint
+    tip = bone.next_joint
+
+    pygameWindow.drawBlackLine(handleVectorFromLeap(base), handleVectorFromLeap(tip), b)
+
+
+def handleVectorFromLeap(v):
+    global x, y, xMin, xMax, yMin, yMax, tip
+    x = v[0]
+    y = -v[2]
+
+    print x, y
+    if x < xMin:
+        xMin = x
+    if x > xMax:
+        xMax = x
+    if y < yMin:
+        yMin = y
+    if y > yMax:
+        yMax = y
+
+    pygameX = int(Scale(x, xMin, xMax, 0, pygameWindowWidth))
+    pygameY = int(Scale(y, yMax, yMin, 0, pygameWindowDepth))
+
+    return pygameX, pygameY
 
 
 controller = Leap.Controller()
 
-# # infinite loop
+# infinite loop
 while True:
     pygameWindow.prepare()
     frame = controller.frame()
     if len(frame.hands) > 0:
         hand = frame.hands[0]
         fingers = hand.fingers
-        indexFingerList = fingers.finger_type(Leap.Finger.TYPE_INDEX)
-        indexFinger = indexFingerList[0]
-        print hand
-        distalPhalanx = indexFinger.bone(Leap.Bone.TYPE_DISTAL)
-        print distalPhalanx
-        tip = distalPhalanx.next_joint
-        print tip
-        handleFrame(frame)
-    pygameX = int(Scale(x, xMin, xMax, 0, pygameWindowWidth))
-    pygameY = int(Scale(y, yMax, yMin, 0, pygameWindowDepth))
-    pygameWindow.drawBlackCircle(pygameX, pygameY)
-    # perturbCirclePosition()
+        for finger in fingers:
+            handleFinger(finger)
+
     pygameWindow.reveal()
