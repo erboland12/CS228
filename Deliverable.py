@@ -1,6 +1,7 @@
 from pygameWindowDe103 import PYGAME_WINDOW
 from constants import pygameWindowWidth, pygameWindowDepth
 import sys
+
 sys.path.insert(0, '..')
 import Leap
 
@@ -15,7 +16,11 @@ pygameWindow = PYGAME_WINDOW()
 
 
 class DELIVERABLE:
-    def __init__(self, controller, pygameWindow, x, y, xMin, xMax, yMin, yMax):
+    numberOfHands = 0
+    previousNumberOfHands = 0
+    currentNumberOfHands = 0
+
+    def __init__(self, controller, pygameWindow, x, y, xMin, xMax, yMin, yMax, prev, curr):
         self.controller = controller
         self.pygameWindow = pygameWindow
         self.x = x
@@ -24,20 +29,29 @@ class DELIVERABLE:
         self.xMax = xMax
         self.yMin = yMin
         self.yMax = yMax
+        self.previousNumberOfHands = prev
+        self.currentNumberOfHands = curr
 
-    def handleFrame(self, frame):
-        global x, y, xMin, xMax, yMin, yMax, tip, pygameWindowWidth, pygameWindowDepth
-        x = int(tip[0])
-        y = int(tip[2])
+    def handleFrame(self, i):
+        self.currentNumberOfHands = i
+        # global x, y, xMin, xMax, yMin, yMax, tip, pygameWindowWidth, pygameWindowDepth
+        # x = int(tip[0])
+        # y = int(tip[2])
+        #
+        # if x < xMin:
+        #     xMin = x
+        # if x > xMax:
+        #     xMax = x
+        # if y < yMin:
+        #     yMin = y
+        # if y > yMax:
+        #     yMax = y
 
-        if x < xMin:
-            xMin = x
-        if x > xMax:
-            xMax = x
-        if y < yMin:
-            yMin = y
-        if y > yMax:
-            yMax = y
+        if self.Recording_Is_Ending():
+            print "Recording Ended"
+
+        self.previousNumberOfHands = self.currentNumberOfHands
+
 
     def Scale(self, value, dMin, dMax, min, max):
         if dMin > value > dMax:
@@ -73,15 +87,14 @@ class DELIVERABLE:
     def handleBone(self, bone, b):
         base = bone.prev_joint
         tip = bone.next_joint
-
-        pygameWindow.drawBlackLine(self.handleVectorFromLeap(base), self.handleVectorFromLeap(tip), b)
+        pygameWindow.drawLine(self.handleVectorFromLeap(base), self.handleVectorFromLeap(tip), b,
+                              self.currentNumberOfHands)
 
     def handleVectorFromLeap(self, v):
         global x, y, xMin, xMax, yMin, yMax, tip
         x = v[0]
         y = -v[2]
 
-        print x, y
         if x < xMin:
             xMin = x
         if x > xMax:
@@ -93,20 +106,32 @@ class DELIVERABLE:
 
         pygameX = int(self.Scale(x, xMin, xMax, 0, pygameWindowWidth))
         pygameY = int(self.Scale(y, yMax, yMin, 0, pygameWindowDepth))
-
         return pygameX, pygameY
 
-    def Run_Once(self):
-      pygameWindow.prepare()
-      frame = controller.frame()
+    def Recording_Is_Ending(self):
+        if self.previousNumberOfHands > self.currentNumberOfHands:
+            return True
 
-      if len(frame.hands) > 0:
-        hand = frame.hands[0]
-        fingers = hand.fingers
-        for finger in fingers:
-          self.handleFinger(finger)
-      pygameWindow.reveal()
+    def Run_Once(self):
+        pygameWindow.prepare()
+        frame = controller.frame()
+
+        if len(frame.hands) > 0:
+            if len(frame.hands) == 1:
+                self.handleFrame(1)
+                hand = frame.hands[0]
+                fingers = hand.fingers
+                for finger in fingers:
+                    self.handleFinger(finger)
+            elif len(frame.hands) == 2:
+                self.handleFrame(2)
+                hand = frame.hands[0]
+                fingers = hand.fingers
+                for finger in fingers:
+                    self.handleFinger(finger)
+        pygameWindow.reveal()
 
     def Run_Forever(self):
         while True:
             self.Run_Once()
+            self.previousNumberOfHands = self.currentNumberOfHands

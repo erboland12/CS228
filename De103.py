@@ -6,6 +6,7 @@ from Deliverable import controller
 
 deliv = DELIVERABLE(controller, pygameWindow,
                     x, y, xMin,
-                    xMax, yMin, yMax)
+                    xMax, yMin, yMax,
+                    DELIVERABLE.previousNumberOfHands,  DELIVERABLE.currentNumberOfHands)
 deliv.Run_Forever()
 
