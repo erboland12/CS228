@@ -7,9 +7,11 @@ import pickle
 
 
 reader = READER()
-
+reader.Print_Gestures()
 deliv = DELIVERABLE(controller, pygameWindow,
                     x, y, xMin,
                     xMax, yMin, yMax,
                     DELIVERABLE.previousNumberOfHands,  DELIVERABLE.currentNumberOfHands)
+
+
 deliv.Run_Forever()

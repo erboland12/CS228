@@ -2,6 +2,8 @@ from pygameWindowDe103 import PYGAME_WINDOW
 from constants import pygameWindowWidth, pygameWindowDepth
 import sys
 import numpy as np
+import os
+import shutil
 
 sys.path.insert(0, '..')
 import Leap
@@ -18,6 +20,7 @@ pygameWindow = PYGAME_WINDOW()
 xCord = 0
 yCord = 0
 zCord = 0
+
 
 class DELIVERABLE:
     import pickle
@@ -100,12 +103,12 @@ class DELIVERABLE:
         pygameWindow.drawLine(self.handleVectorFromLeap(base), self.handleVectorFromLeap(tip), b,
                               self.currentNumberOfHands)
         for i in range(0, 5):
-            self.gestureData[i, -b+4, 0] = base[0]
-            self.gestureData[i, -b+4, 1] = base[1]
-            self.gestureData[i, -b+4, 2] = base[2]
-            self.gestureData[i, -b+4, 3] = tip[0]
-            self.gestureData[i, -b+4, 4] = tip[1]
-            self.gestureData[i, -b+4, 5] = tip[2]
+            self.gestureData[i, -b + 4, 0] = base[0]
+            self.gestureData[i, -b + 4, 1] = base[1]
+            self.gestureData[i, -b + 4, 2] = base[2]
+            self.gestureData[i, -b + 4, 3] = tip[0]
+            self.gestureData[i, -b + 4, 4] = tip[1]
+            self.gestureData[i, -b + 4, 5] = tip[2]
 
     def handleVectorFromLeap(self, v):
         global x, y, xCord, yCord, zCord, xMin, xMax, yMin, yMax, tip
@@ -143,10 +146,13 @@ class DELIVERABLE:
         self.pickle_out.close()
         self.gestI += 1
 
+    def delDirectory(self):
+        shutil.rmtree("userData")
+        os.mkdir("userData")
+
     def Run_Once(self):
         pygameWindow.prepare()
         frame = controller.frame()
-
         if len(frame.hands) > 0:
             if len(frame.hands) == 1:
                 self.handleFrame(1)
