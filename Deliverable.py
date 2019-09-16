@@ -19,7 +19,6 @@ xCord = 0
 yCord = 0
 zCord = 0
 
-
 class DELIVERABLE:
     import pickle
     numberOfHands = 0
@@ -38,6 +37,7 @@ class DELIVERABLE:
         self.previousNumberOfHands = prev
         self.currentNumberOfHands = curr
         self.gestureData = np.zeros((5, 4, 6), dtype='f')
+        self.gestI = 0
 
     def handleFrame(self, i):
         self.currentNumberOfHands = i
@@ -55,7 +55,7 @@ class DELIVERABLE:
         #     yMax = y
 
         if self.Recording_Is_Ending():
-            print self.gestureData
+            print self.gestureData[0]
             self.Save_Gesture()
 
         self.previousNumberOfHands = self.currentNumberOfHands
@@ -97,16 +97,15 @@ class DELIVERABLE:
 
         rawBone = base
         rawTip = tip
+        pygameWindow.drawLine(self.handleVectorFromLeap(base), self.handleVectorFromLeap(tip), b,
+                              self.currentNumberOfHands)
         for i in range(0, 5):
-            pygameWindow.drawLine(self.handleVectorFromLeap(base), self.handleVectorFromLeap(tip), b,
-                                  self.currentNumberOfHands)
-
-            self.gestureData[i, b-1, 0] = base[0]
-            self.gestureData[i, b-1, 1] = base[1]
-            self.gestureData[i, b-1, 2] = base[2]
-            self.gestureData[i, b-1, 3] = tip[0]
-            self.gestureData[i, b-1, 4] = tip[1]
-            self.gestureData[i, b-1, 5] = tip[2]
+            self.gestureData[i, -b+4, 0] = base[0]
+            self.gestureData[i, -b+4, 1] = base[1]
+            self.gestureData[i, -b+4, 2] = base[2]
+            self.gestureData[i, -b+4, 3] = tip[0]
+            self.gestureData[i, -b+4, 4] = tip[1]
+            self.gestureData[i, -b+4, 5] = tip[2]
 
     def handleVectorFromLeap(self, v):
         global x, y, xCord, yCord, zCord, xMin, xMax, yMin, yMax, tip
@@ -139,9 +138,10 @@ class DELIVERABLE:
             return True
 
     def Save_Gesture(self):
-        self.pickle_out = open("userData/gesture.p", "wb")
-        self.pickle.dump(self.gestureData, self.pickle_out)
+        self.pickle_out = open("userData/gesture" + str(self.gestI) + ".p", "wb")
+        self.pickle.dump(self.gestureData[0], self.pickle_out)
         self.pickle_out.close()
+        self.gestI += 1
 
     def Run_Once(self):
         pygameWindow.prepare()
