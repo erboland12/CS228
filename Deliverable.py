@@ -58,7 +58,7 @@ class DELIVERABLE:
         #     yMax = y
 
         if self.Recording_Is_Ending():
-            print self.gestureData[0]
+            print self.gestureData
             self.Save_Gesture()
 
         self.previousNumberOfHands = self.currentNumberOfHands
@@ -97,18 +97,17 @@ class DELIVERABLE:
     def handleBone(self, bone, b):
         base = bone.prev_joint
         tip = bone.next_joint
-
         rawBone = base
         rawTip = tip
         pygameWindow.drawLine(self.handleVectorFromLeap(base), self.handleVectorFromLeap(tip), b,
                               self.currentNumberOfHands)
-        for i in range(0, 5):
-            self.gestureData[i, -b + 4, 0] = base[0]
-            self.gestureData[i, -b + 4, 1] = base[1]
-            self.gestureData[i, -b + 4, 2] = base[2]
-            self.gestureData[i, -b + 4, 3] = tip[0]
-            self.gestureData[i, -b + 4, 4] = tip[1]
-            self.gestureData[i, -b + 4, 5] = tip[2]
+
+        self.gestureData[-b + 4, -b + 4, 0] = base[0]
+        self.gestureData[-b + 4, -b + 4, 1] = base[1]
+        self.gestureData[-b + 4, -b + 4, 2] = base[2]
+        self.gestureData[-b + 4, -b + 4, 3] = tip[0]
+        self.gestureData[-b + 4, -b + 4, 4] = tip[1]
+        self.gestureData[-b + 4, -b + 4, 5] = tip[2]
 
     def handleVectorFromLeap(self, v):
         global x, y, xCord, yCord, zCord, xMin, xMax, yMin, yMax, tip

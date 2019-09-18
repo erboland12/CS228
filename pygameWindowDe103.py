@@ -5,6 +5,7 @@ from constants import pygameWindowDepth, pygameWindowWidth
 white = [255, 255, 255]
 green = [0, 128, 0]
 red = [255, 0, 0]
+blue = [0, 0, 255]
 black = [0, 0, 0]
 
 class PYGAME_WINDOW:
@@ -27,4 +28,5 @@ class PYGAME_WINDOW:
         elif i == 2:
             pygame.draw.line(self.screen, red, (xBase, yBase), (xTip, yTip), b)
 
-
+    def drawBlueLine(self, (xBase, yBase), (xTip, yTip), b):
+        pygame.draw.line(self.screen, blue, (xBase, yBase), (xTip, yTip))
