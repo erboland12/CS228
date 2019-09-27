@@ -14,4 +14,7 @@ deliv = DELIVERABLE(controller, pygameWindow,
                     xMax, yMin, yMax,
                     DELIVERABLE.previousNumberOfHands,  DELIVERABLE.currentNumberOfHands)
 
+pickle_in = open("userData/gesture1.p", "rb")
+gestureData = pickle.load(pickle_in)
+print gestureData
 # deliv.Run_Forever()

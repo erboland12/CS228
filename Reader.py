@@ -2,6 +2,9 @@ import pickle
 import os
 from pygameWindowDe103 import PYGAME_WINDOW
 import sys
+import numpy as np
+import time
+
 sys.path.insert(0, '..')
 import Leap
 
@@ -13,6 +16,7 @@ class READER:
     def __init__(self, pygameWindow):
         self.pygameWindow = pygameWindow
         self.Read_Gesture()
+        self.gestureData = np.zeros((5, 4, 6), dtype='f')
 
     def Read_Gesture(self):
         path, dirs, files = next(os.walk('userData'))
@@ -28,19 +32,26 @@ class READER:
         pygameWindow.prepare()
         pickle_in = open("userData/gesture" + str(i) + ".p", "rb")
         gestureData = pickle.load(pickle_in)
-        for i in range(0, 4):
-            for j in range(0, 3):
-                currentBone = gestureData[i]
+        for i in range(0, 5):
+            for j in range(0, 4):
+                currentBone = gestureData[i, j, :]
+                print i, j, currentBone
                 xBaseNotYetScaled = currentBone[0]
-                yBaseNotYetScaled = currentBone[1]
-                xTipNotYetScaled = currentBone[2]
-                yTipNotYetScaled = currentBone[3]
-                xBase = self.Scale(xBaseNotYetScaled, -100000, 100000, -1000000, 100000)
-                yBase = self.Scale(yBaseNotYetScaled, -100000, 100000, -1000000, 100000)
-                xTip = self.Scale(xTipNotYetScaled, -100000, 100000, -1000000, 100000)
-                yTip = self.Scale(yTipNotYetScaled, -1000, 1000, -10000, 10000)
-                pygameWindow.drawBlueLine((xBaseNotYetScaled, yBaseNotYetScaled), (xTipNotYetScaled, yTipNotYetScaled), i)
+                yBaseNotYetScaled = currentBone[2]
+                xTipNotYetScaled = currentBone[3]
+                yTipNotYetScaled = currentBone[5]
+                xBase = self.Scale(xBaseNotYetScaled, -250, 250, 0, 300)
+                yBase = self.Scale(yBaseNotYetScaled, -250, 250, 0, 300)
+                xTip = self.Scale(xTipNotYetScaled, -250, 250, 0, 300)
+                yTip = self.Scale(yTipNotYetScaled, -250, 250, 0, 300)
+                pygameWindow.drawBlueLine((xBase, yBase), (xTip, yTip),
+                                          i)
+        # pickle_in = open("userData/gesture1.p", "rb")
+        # gestureData = pickle.load(pickle_in)
+        # print gestureData
+
         pygameWindow.reveal()
+        time.sleep(0.5)
 
     def Scale(self, value, dMin, dMax, min, max):
         if dMin > value.any() > dMax:
