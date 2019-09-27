@@ -39,29 +39,27 @@ class DELIVERABLE:
         self.yMax = yMax
         self.previousNumberOfHands = prev
         self.currentNumberOfHands = curr
-        self.gestureData = np.zeros((5, 4, 6), dtype='f')
+        self.numberOfGestures = 100
+        self.gestureData = np.zeros((5, 4, 6, self.numberOfGestures), dtype='f')
         self.gestI = 0
+        self.gestureIndex = 0
 
     def handleFrame(self, i):
         self.currentNumberOfHands = i
-        # global x, y, xMin, xMax, yMin, yMax, tip, pygameWindowWidth, pygameWindowDepth
-        # x = int(tip[0])
-        # y = int(tip[2])
-        #
-        # if x < xMin:
-        #     xMin = x
-        # if x > xMax:
-        #     xMax = x
-        # if y < yMin:
-        #     yMin = y
-        # if y > yMax:
-        #     yMax = y
 
         if self.Recording_Is_Ending():
-            print self.gestureData
+            # print self.gestureData[:, :, :, 1]
+            # exit()
             self.Save_Gesture()
 
         self.previousNumberOfHands = self.currentNumberOfHands
+        if self.currentNumberOfHands == 2:
+            print('gesture ' + str(self.gestureIndex) + ' stored')
+            self.gestureIndex += 1
+            if self.gestureIndex == self.numberOfGestures:
+                print self.gestureData[:, :, :, 0]
+                print self.gestureData[:, :, :, 99]
+                exit(0)
 
     def Scale(self, value, dMin, dMax, min, max):
         if dMin > value > dMax:
@@ -98,14 +96,13 @@ class DELIVERABLE:
         pygameWindow.drawLine(self.handleVectorFromLeap(base), self.handleVectorFromLeap(tip), b,
                               self.currentNumberOfHands)
 
-        self.gestureData[i, j, 0] = base[0]
-        self.gestureData[i, j, 1] = base[1]
-        self.gestureData[i, j, 2] = base[2]
-        self.gestureData[i, j, 3] = tip[0]
-        self.gestureData[i, j, 4] = tip[1]
-        self.gestureData[i, j, 5] = tip[2]
-
-
+        if self.currentNumberOfHands == 2:
+            self.gestureData[i, j, 0, self.gestureIndex] = base[0]
+            self.gestureData[i, j, 1, self.gestureIndex] = base[1]
+            self.gestureData[i, j, 2, self.gestureIndex] = base[2]
+            self.gestureData[i, j, 3, self.gestureIndex] = tip[0]
+            self.gestureData[i, j, 4, self.gestureIndex] = tip[1]
+            self.gestureData[i, j, 5, self.gestureIndex] = tip[2]
 
 
     def handleVectorFromLeap(self, v):
