@@ -39,7 +39,7 @@ class DELIVERABLE:
         self.yMax = yMax
         self.previousNumberOfHands = prev
         self.currentNumberOfHands = curr
-        self.numberOfGestures = 100
+        self.numberOfGestures = 1000
         self.gestureData = np.zeros((5, 4, 6, self.numberOfGestures), dtype='f')
         self.gestI = 0
         self.gestureIndex = 0
@@ -48,9 +48,9 @@ class DELIVERABLE:
         self.currentNumberOfHands = i
 
         if self.Recording_Is_Ending():
+            pass
             # print self.gestureData[:, :, :, 1]
             # exit()
-            self.Save_Gesture()
 
         self.previousNumberOfHands = self.currentNumberOfHands
         if self.currentNumberOfHands == 2:
@@ -59,6 +59,7 @@ class DELIVERABLE:
             if self.gestureIndex == self.numberOfGestures:
                 print self.gestureData[:, :, :, 0]
                 print self.gestureData[:, :, :, 99]
+                self.Save_Gesture()
                 exit(0)
 
     def Scale(self, value, dMin, dMax, min, max):
@@ -136,7 +137,7 @@ class DELIVERABLE:
             return True
 
     def Save_Gesture(self):
-        self.pickle_out = open("userData/gesture" + str(self.gestI) + ".p", "wb")
+        self.pickle_out = open("userData/train6.p", "wb")
         self.pickle.dump(self.gestureData, self.pickle_out)
         self.pickle_out.close()
         self.gestI += 1
