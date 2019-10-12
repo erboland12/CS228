@@ -6,7 +6,7 @@ import os
 import shutil
 
 sys.path.insert(0, '..')
-import Leap
+from x86 import Leap
 
 x = 250
 y = 250
@@ -137,7 +137,7 @@ class DELIVERABLE:
             return True
 
     def Save_Gesture(self):
-        self.pickle_out = open("userData/train6.p", "wb")
+        self.pickle_out = open("userData/test6.p", "wb")
         self.pickle.dump(self.gestureData, self.pickle_out)
         self.pickle_out.close()
         self.gestI += 1

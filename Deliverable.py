@@ -6,7 +6,7 @@ import os
 import shutil
 
 sys.path.insert(0, '..')
-import Leap
+from x86 import Leap
 
 x = 250
 y = 250

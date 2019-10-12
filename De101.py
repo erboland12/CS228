@@ -1,9 +1,9 @@
 import sys
 from pygameWindow import PYGAME_WINDOW
 import random
-from constants import pygameWindowWidth, pygameWindowDepth
+
 sys.path.insert(0, '..')
-import Leap
+from x86 import Leap
 
 controller = Leap.Controller()
 
