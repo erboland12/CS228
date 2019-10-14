@@ -4,6 +4,7 @@ from constants import pygameWindowDepth, pygameWindowWidth
 
 white = [255, 255, 255]
 black = [0, 0, 0]
+green = [30, 255, 30]
 
 class PYGAME_WINDOW:
     def __init__(self):
@@ -22,4 +23,8 @@ class PYGAME_WINDOW:
     def drawBlackLine(self, (xBase, yBase), (xTip, yTip), b):
         pygame.draw.line(self.screen, black, (xBase, yBase), (xTip, yTip), b)
 
+    def drawGreenLine(self, (xBase, yBase), (xTip, yTip), b):
+        pygame.draw.line(self.screen, green, (xBase, yBase), (xTip, yTip), b)
 
+    def setImage(self, image):
+        self.screen.blit(image, (pygameWindowWidth/2, 0))

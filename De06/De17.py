@@ -1,4 +1,5 @@
 import sys
+import pygame
 from pygameWindow import PYGAME_WINDOW
 import random
 import numpy as np
@@ -18,7 +19,54 @@ pygameWindow = PYGAME_WINDOW()
 # coordinate variables
 x = 250
 y = 250
+programState = 0
+one = 'images/number1.jpg'
+newImage = pygame.image.load(one)
+newImage = pygame.transform.scale(newImage, (pygameWindowWidth/2, pygameWindowDepth/2))
 
+left = 'images/leftArrow.png'
+leftImage = pygame.image.load(left)
+leftImage = pygame.transform.scale(leftImage, (pygameWindowWidth/2, pygameWindowDepth/2))
+
+right = 'images/rightArrow.png'
+rightImage = pygame.image.load(right)
+rightImage = pygame.transform.scale(rightImage, (pygameWindowWidth/2, pygameWindowDepth/2))
+
+up = 'images/upArrow.png'
+upImage = pygame.image.load(up)
+upImage = pygame.transform.scale(upImage, (pygameWindowWidth/2, pygameWindowDepth/2))
+
+down = 'images/downArrow.png'
+downImage = pygame.image.load(down)
+downImage = pygame.transform.scale(downImage, (pygameWindowWidth/2, pygameWindowDepth/2))
+
+def HandleState0():
+    global controller, programState
+    pygameWindow.setImage(newImage)
+    frame = controller.frame()
+    if len(frame.hands) > 0:
+        programState = 1
+
+def HandleState1():
+    global controller, programState
+    frame = controller.frame()
+    # pygameWindow.setImage(leftImage)
+    hand = frame.hands[0]
+    fingers = hand.fingers
+    for finger in fingers:
+        handleFinger(finger, k)
+        # for b in range(0, 4):
+        #     tip = finger.bone(b).next_joint
+            # if b == 0 or b == 3:
+            #     testData[0, k] = tip[0]
+            #     testData[0, k + 1] = tip[1]
+            #     testData[0, k + 2] = tip[2]
+            #     k += 3
+    # testData = CenterData(testData)
+    # predictedClass = clf.Predict(testData)
+    # print(predictedClass)
+    if len(frame.hands) == 0:
+        programState = 0
 
 def perturbCirclePosition():
     global x, y
@@ -60,19 +108,21 @@ def Scale(value, dMin, dMax, min, max):
         newRange = max - min
         if dMin == dMax:
             scaledValue = min
-            return scaledValue
+            return scaledValue/2
         else:
             scaledValue = (((value - dMin) * newRange) / oldRange) + min
-            return scaledValue
+            return scaledValue/2
+
     else:
         oldRange = dMax - dMin
         newRange = max - min
         if dMin == dMax:
             scaledValue = min
-            return scaledValue
+            return scaledValue/2
         else:
             scaledValue = (((value - dMin) * newRange) / oldRange) + min
-            return scaledValue
+            return scaledValue/2
+
 
 
 def handleFinger(f, k):
@@ -112,6 +162,15 @@ def handleVectorFromLeap(v):
     pygameX = int(Scale(x, xMin, xMax, 0, pygameWindowWidth))
     pygameY = int(Scale(y, yMax, yMin, 0, pygameWindowDepth))
 
+    if pygameX > pygameWindowWidth/3 + 40:
+        pygameWindow.setImage(leftImage)
+    elif pygameX < pygameWindowDepth/4 - 30:
+        pygameWindow.setImage(rightImage)
+    elif pygameY > pygameWindowDepth/4 + 60:
+        pygameWindow.setImage(upImage)
+    elif pygameY < pygameWindowDepth/3 - 100:
+        pygameWindow.setImage(downImage)
+
     return pygameX, pygameY
 
 def CenterData(data):
@@ -135,22 +194,15 @@ controller = Leap.Controller()
 # infinite loop
 while True:
     pygameWindow.prepare()
+    if programState == 0:
+        HandleState0()
+    elif programState == 1:
+        HandleState1()
     frame = controller.frame()
     if len(frame.hands) > 0:
         k = 0
-        hand = frame.hands[0]
-        fingers = hand.fingers
-        for finger in fingers:
-            handleFinger(finger, k)
-            for b in range(0, 4):
-                tip = finger.bone(b).next_joint
-                if b == 0 or b == 3:
-                    testData[0, k] = tip[0]
-                    testData[0, k + 1] = tip[1]
-                    testData[0, k + 2] = tip[2]
-                    k += 3
-        testData = CenterData(testData)
-        predictedClass = clf.Predict(testData)
-        print(predictedClass)
+
+    pygameWindow.drawGreenLine((0, pygameWindowDepth / 2), (pygameWindowWidth, pygameWindowDepth / 2), 4)
+    pygameWindow.drawGreenLine((pygameWindowDepth / 2, 0), (pygameWindowDepth / 2, pygameWindowDepth / 2), 4)
     pygameWindow.reveal()
 
