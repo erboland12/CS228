@@ -28,3 +28,5 @@ class PYGAME_WINDOW:
 
     def setImage(self, image):
         self.screen.blit(image, (pygameWindowWidth/2, 0))
+    def setSign(self, image):
+        self.screen.blit(image, (pygameWindowWidth/2, pygameWindowDepth/2))

@@ -1,0 +1,14 @@
+(dp0
+S'bob'
+p1
+(dp2
+S'logins'
+p3
+I1
+ssS'Eric'
+p4
+(dp5
+S'logins'
+p6
+I2
+ss.
