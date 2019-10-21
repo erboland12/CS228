@@ -24,21 +24,55 @@ controller = Leap.Controller()
 # coordinate variables
 x = 250
 y = 250
-one = 'images/hand.jpg'
-newImage = pygame.image.load(one)
-newImage = pygame.transform.scale(newImage, (pygameWindowWidth / 2, pygameWindowDepth / 2))
+
 zero = 'images/zero.jpg'
 newImage2 = pygame.image.load(zero)
 newImage2 = pygame.transform.scale(newImage2, (pygameWindowWidth / 2, pygameWindowDepth / 2))
+
 aslZero = 'images/aslZero.png'
 aslImage = pygame.image.load(aslZero)
 aslImage = pygame.transform.scale(aslImage, (pygameWindowWidth / 2, pygameWindowDepth / 2))
+
+one = 'images/one.jpg'
+newImage = pygame.image.load(one)
+newImage = pygame.transform.scale(newImage, (pygameWindowWidth / 2, pygameWindowDepth / 2))
+
+aslOne = 'images/aslOne.jpg'
+aslImage1 = pygame.image.load(aslOne)
+aslImage1 = pygame.transform.scale(aslImage1, (pygameWindowWidth / 2, pygameWindowDepth / 2))
+
+two = 'images/two.jpg'
+twoImage = pygame.image.load(two)
+twoImage = pygame.transform.scale(twoImage, (pygameWindowWidth / 2, pygameWindowDepth / 2))
+
+aslTwo = 'images/aslTwo.jpg'
+aslImage2 = pygame.image.load(aslTwo)
+aslImage2 = pygame.transform.scale(aslImage2, (pygameWindowWidth / 2, pygameWindowDepth / 2))
+
+three = 'images/three.jpg'
+threeImage = pygame.image.load(three)
+threeImage = pygame.transform.scale(threeImage, (pygameWindowWidth / 2, pygameWindowDepth / 2))
+
+aslThree = 'images/aslThree.jpg'
+aslImage3 = pygame.image.load(aslThree)
+aslImage3 = pygame.transform.scale(aslImage3, (pygameWindowWidth / 2, pygameWindowDepth / 2))
+
 five = 'images/five.jpg'
 newImage3 = pygame.image.load(five)
 newImage3 = pygame.transform.scale(newImage3, (pygameWindowWidth / 2, pygameWindowDepth / 2))
+
 aslFive = 'images/aslFive.jpg'
 aslFive = pygame.image.load(aslFive)
 aslFive = pygame.transform.scale(aslFive, (pygameWindowWidth / 2, pygameWindowDepth / 2))
+
+eight = 'images/eight.png'
+eightImage = pygame.image.load(eight)
+eightImage = pygame.transform.scale(eightImage, (pygameWindowWidth / 2, pygameWindowDepth / 2))
+
+aslEight = 'images/aslFive.jpg'
+aslImage8 = pygame.image.load(aslEight)
+aslImage8 = pygame.transform.scale(aslEight, (pygameWindowWidth / 2, pygameWindowDepth / 2))
+
 left = 'images/leftArrow.png'
 leftImage = pygame.image.load(left)
 leftImage = pygame.transform.scale(leftImage, (pygameWindowWidth / 2, pygameWindowDepth / 2))
