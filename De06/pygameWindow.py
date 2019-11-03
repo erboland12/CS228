@@ -1,15 +1,15 @@
 import pygame
-
 from constants import pygameWindowDepth, pygameWindowWidth
 
 white = [255, 255, 255]
 black = [0, 0, 0]
 green = [30, 255, 30]
 
+
 class PYGAME_WINDOW:
     def __init__(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((pygameWindowWidth,pygameWindowDepth))
+        self.screen = pygame.display.set_mode((pygameWindowWidth, pygameWindowDepth))
 
     def prepare(self):
         self.screen.fill(white)
@@ -27,6 +27,9 @@ class PYGAME_WINDOW:
         pygame.draw.line(self.screen, green, (xBase, yBase), (xTip, yTip), b)
 
     def setImage(self, image):
-        self.screen.blit(image, (pygameWindowWidth/2, 0))
+        self.screen.blit(image, (pygameWindowWidth / 2, 0))
+
     def setSign(self, image):
-        self.screen.blit(image, (pygameWindowWidth/2, pygameWindowDepth/2))
+        self.screen.blit(image, (pygameWindowWidth / 2, pygameWindowDepth / 2))
+
+
