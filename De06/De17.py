@@ -161,6 +161,8 @@ averageRight = 0.0
 averageTotal = 0.0
 totalCorrect = 0
 randomNum = random.randint(1, 10)
+randomVar1 = random.randint(1, 10)
+randomVar2 = random.randint(1, 10)
 programState = -1
 userName = raw_input('Please enter your name: ')
 selection = ""
@@ -220,14 +222,31 @@ def HandleState1():
 def HandleState2():
     global controller, k, framesHeld, userName, sessionTotal, sessionCorrect, totalCorrect, counter, errorCounter, \
         signedCorrect, signedWrong, randomNum, programState, testData, lastSessionCorrect, lastSessionTotal, careerCorrect, \
-        careerAttempts, averageTotal, averageRight
+        careerAttempts, averageTotal, averageRight, selection, randomVar1, randomVar2
     pygameWindow.drawGreenLine((0, pygameWindowDepth / 2), (pygameWindowWidth, pygameWindowDepth / 2), 4)
     pygameWindow.drawGreenLine((pygameWindowDepth / 2, 0), (pygameWindowDepth / 2, pygameWindowDepth / 2), 4)
+    
+    if selection == "addition":
+        while randomVar1 + randomVar2 > 9:
+            randomVar1 = random.randint(1, 10)
+            randomVar2 = random.randint(1, 10)
+        randomNum = randomVar1 + randomVar2
+    elif selection == "subtraction":
+        while randomVar1 - randomVar2 < 0 or randomVar1 - randomVar2 > 9:
+            randomVar1 = random.randInt(1, 20)
+            randomVar2 = random.randint(1, 20)
+        randomNum = randomVar1 + randomVar2
 
-    setSigns(randomNum)
     myfont = pygame.font.SysFont('Comic Sans MS', 14)
 
     saveSessionStats()
+    
+    if selection == "addition":
+        addProblem = myfont.render(randomVar1 + ' + ' + randomVar2, False, (0, 0, 0))
+        pygameWindow.screen.blit(addProblem, (pygameWindowWidth / 2, pygameWindowDepth + 50))
+    elif selection == "subtraction":
+        subProblem = myfont.render(randomVar1 + ' - ' + randomVar2, False, (0, 0, 0))
+        pygameWindow.screen.blit(subProblem, (pygameWindowWidth / 2, pygameWindowDepth / 2 + 50))
     if sessionTotal == 0:
         currSesh = myfont.render('Current Session Accuracy: 0.0%', False, (0, 0, 0))
         pygameWindow.screen.blit(currSesh, (pygameWindowWidth / 25, pygameWindowDepth / 2+ 100))
@@ -267,70 +286,70 @@ def HandleState2():
     predictedClass = clf.Predict(testData)
 
     if randomNum == 1:
-        if predictedClass == 5:
-            counter += 1
-            errorCounter = 0
-        else:
-            counter = 0
-            errorCounter += 1
-    elif randomNum == 2:
-        if predictedClass == 0:
-            counter += 1
-            errorCounter = 0
-        else:
-            counter = 0
-            errorCounter += 1
-    elif randomNum == 3:
         if predictedClass == 1:
             counter += 1
             errorCounter = 0
         else:
             counter = 0
             errorCounter += 1
-    elif randomNum == 4:
+    elif randomNum == 2:
         if predictedClass == 2:
             counter += 1
             errorCounter = 0
         else:
             counter = 0
             errorCounter += 1
-    elif randomNum == 5:
+    elif randomNum == 3:
         if predictedClass == 3:
             counter += 1
             errorCounter = 0
         else:
             counter = 0
             errorCounter += 1
-    elif randomNum == 6:
-        if predictedClass == 8:
-            counter += 1
-            errorCounter = 0
-        else:
-            counter = 0
-            errorCounter += 1
-    elif randomNum == 7:
+    elif randomNum == 4:
         if predictedClass == 4:
             counter += 1
             errorCounter = 0
         else:
             counter = 0
             errorCounter += 1
-    elif randomNum == 8:
+    elif randomNum == 5:
+        if predictedClass == 5:
+            counter += 1
+            errorCounter = 0
+        else:
+            counter = 0
+            errorCounter += 1
+    elif randomNum == 6:
         if predictedClass == 6:
             counter += 1
             errorCounter = 0
         else:
             counter = 0
             errorCounter += 1
-    elif randomNum == 9:
+    elif randomNum == 7:
         if predictedClass == 7:
             counter += 1
             errorCounter = 0
         else:
             counter = 0
             errorCounter += 1
-    elif randomNum == 10:
+    elif randomNum == 8:
+        if predictedClass == 8:
+            counter += 1
+            errorCounter = 0
+        else:
+            counter = 0
+            errorCounter += 1
+    elif randomNum == 9:
         if predictedClass == 9:
+            counter += 1
+            errorCounter = 0
+        else:
+            counter = 0
+            errorCounter += 1
+    elif randomNum == 0:
+        if predictedClass == 0:
             counter += 1
             errorCounter = 0
         else:
@@ -434,25 +453,25 @@ def handleCorrectResponse():
 def logAttempts():
     global database, randomNum
     if randomNum == 1:
-        database[userName]['digit5attempted'] += 1
-    elif randomNum == 2:
-        database[userName]['digit0attempted'] += 1
-    elif randomNum == 3:
         database[userName]['digit1attempted'] += 1
-    elif randomNum == 4:
+    elif randomNum == 2:
         database[userName]['digit2attempted'] += 1
-    elif randomNum == 5:
+    elif randomNum == 3:
         database[userName]['digit3attempted'] += 1
-    elif randomNum == 6:
-        database[userName]['digit8attempted'] += 1
-    elif randomNum == 7:
+    elif randomNum == 4:
         database[userName]['digit4attempted'] += 1
-    elif randomNum == 8:
+    elif randomNum == 5:
+        database[userName]['digit5attempted'] += 1
+    elif randomNum == 6:
         database[userName]['digit6attempted'] += 1
-    elif randomNum == 9:
+    elif randomNum == 7:
         database[userName]['digit7attempted'] += 1
-    elif randomNum == 10:
+    elif randomNum == 8:
+        database[userName]['digit8attempted'] += 1
+    elif randomNum == 9:
         database[userName]['digit9attempted'] += 1
+    elif randomNum == 0:
+        database[userName]['digit0attempted'] += 1
 
 def handleFrame():
     global x, y, xMin, xMax, yMin, yMax, tip, pygameWindowWidth, pygameWindowDepth
@@ -553,35 +572,35 @@ def handleVectorFromLeap(v):
 
 def setSigns(randomNum):
     if randomNum == 1:
-        pygameWindow.setSign(aslFive)
-        pygameWindow.setImage(newImage3)
-    elif randomNum == 2:
-        pygameWindow.setSign(aslImage)
-        pygameWindow.setImage(newImage2)
-    elif randomNum == 3:
         pygameWindow.setSign(aslImage1)
         pygameWindow.setImage(newImage)
-    elif randomNum == 4:
+    elif randomNum == 2:
         pygameWindow.setSign(aslImage2)
         pygameWindow.setImage(twoImage)
-    elif randomNum == 5:
+    elif randomNum == 3:
         pygameWindow.setSign(aslImage3)
         pygameWindow.setImage(threeImage)
-    elif randomNum == 6:
-        pygameWindow.setSign(aslImage8)
-        pygameWindow.setImage(eightImage)
-    elif randomNum == 7:
+    elif randomNum == 4:
         pygameWindow.setSign(aslFourImage)
         pygameWindow.setImage(fourImage)
-    elif randomNum == 8:
+    elif randomNum == 5:
+        pygameWindow.setSign(aslImage5)
+        pygameWindow.setImage(newImage3)
+    elif randomNum == 6:
         pygameWindow.setSign(aslSixImage)
         pygameWindow.setImage(sixImage)
-    elif randomNum == 9:
+    elif randomNum == 7:
         pygameWindow.setSign(aslSevenImage)
         pygameWindow.setImage(sevenImage)
-    elif randomNum == 10:
+    elif randomNum == 8:
+        pygameWindow.setSign(aslEightImage)
+        pygameWindow.setImage(eightImage)
+    elif randomNum == 9:
         pygameWindow.setSign(aslNineImage)
-        pygameWindow.setImage(nineImage)
+        pygameWindow.setImage(sevenImage)
+    elif randomNum == 10:
+        pygameWindow.setSign(aslImage)
+        pygameWindow.setImage(newImage2)
 
 
 def CenterData(data):
