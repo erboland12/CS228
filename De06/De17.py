@@ -7,6 +7,7 @@ import time
 import random
 import numpy as np
 import pickle
+import atexit
 from constants import pygameWindowDepth, pygameWindowWidth
 
 clf = pickle.load(open('classifier.p', 'rb'))
@@ -15,7 +16,8 @@ testData = np.zeros((1, 30), dtype='f')
 sys.path.insert(0, '../../../../')
 from x86 import Leap
 
-database = pickle.load(open('userData/database.p'))
+database = pickle.load(open('userData/database.p','rb'))
+
 nameEntered = False
 
 controller = Leap.Controller()
@@ -60,6 +62,14 @@ aslThree = 'images/aslThree.jpg'
 aslImage3 = pygame.image.load(aslThree)
 aslImage3 = pygame.transform.scale(aslImage3, (pygameWindowWidth / 2, pygameWindowDepth / 2))
 
+four = 'images/four.png'
+fourImage = pygame.image.load(four)
+fourImage = pygame.transform.scale(fourImage, (pygameWindowWidth / 2, pygameWindowDepth / 2))
+
+aslFour = 'images/aslFour.jpg'
+aslFourImage = pygame.image.load(aslFour)
+aslFourImage = pygame.transform.scale(aslFourImage, (pygameWindowWidth / 2, pygameWindowDepth / 2))
+
 five = 'images/five.png'
 newImage3 = pygame.image.load(five)
 newImage3 = pygame.transform.scale(newImage3, (pygameWindowWidth / 2, pygameWindowDepth / 2))
@@ -68,6 +78,22 @@ aslFive = 'images/aslFive.jpg'
 aslFive = pygame.image.load(aslFive)
 aslFive = pygame.transform.scale(aslFive, (pygameWindowWidth / 2, pygameWindowDepth / 2))
 
+six = 'images/six.png'
+sixImage = pygame.image.load(six)
+sixImage = pygame.transform.scale(sixImage, (pygameWindowWidth / 2, pygameWindowDepth / 2))
+
+aslSix = 'images/aslSix.jpg'
+aslSixImage = pygame.image.load(aslSix)
+aslSixImage = pygame.transform.scale(aslSixImage, (pygameWindowWidth / 2, pygameWindowDepth / 2))
+
+seven = 'images/seven.png'
+sevenImage = pygame.image.load(seven)
+sevenImage = pygame.transform.scale(sevenImage, (pygameWindowWidth / 2, pygameWindowDepth / 2))
+
+aslSeven = 'images/aslSeven.png'
+aslSevenImage = pygame.image.load(aslSeven)
+aslSevenImage = pygame.transform.scale(aslSevenImage, (pygameWindowWidth / 2, pygameWindowDepth / 2))
+
 eight = 'images/eight.jpg'
 eightImage = pygame.image.load(eight)
 eightImage = pygame.transform.scale(eightImage, (pygameWindowWidth / 2, pygameWindowDepth / 2))
@@ -75,6 +101,14 @@ eightImage = pygame.transform.scale(eightImage, (pygameWindowWidth / 2, pygameWi
 aslEight = 'images/aslEight.jpg'
 aslImage8 = pygame.image.load(aslEight)
 aslImage8 = pygame.transform.scale(aslImage8, (pygameWindowWidth / 2, pygameWindowDepth / 2))
+
+nine = 'images/nine.png'
+nineImage = pygame.image.load(nine)
+nineImage = pygame.transform.scale(nineImage, (pygameWindowWidth / 2, pygameWindowDepth / 2))
+
+aslNine = 'images/aslNine.jpg'
+aslNineImage = pygame.image.load(aslNine)
+aslNineImage = pygame.transform.scale(aslNineImage, (pygameWindowWidth / 2, pygameWindowDepth / 2))
 
 left = 'images/leftArrow.png'
 leftImage = pygame.image.load(left)
@@ -119,25 +153,63 @@ counter = 0
 errorCounter = 0
 signedCorrect = 0
 signedWrong = 0
+sessionCorrect = 0.0
+sessionTotal = 0.0
+careerCorrect = 0.0
+careerAttempts = 0.0
+averageRight = 0.0
+averageTotal = 0.0
 totalCorrect = 0
-# randomNum = random.randint(1, 6)
-randomNum = 1
-programState = 0
+randomNum = random.randint(1, 10)
+programState = -1
+userName = raw_input('Please enter your name: ')
+selection = ""
+
+def HandleStateStart():
+    global selection, programState
+    pygameWindow.setButton()
+
+    selected = pygameWindow.checkMouseEventsAdd()
+
+    if selected == "add":
+        selection = "addition"
+        programState = 0
+
+    if selected == "sub":
+        selection = "subtraction"
+        programState = 0
 
 def HandleState0():
-    global controller, programState
+    global controller, programState, selection
+    pygameWindow.drawGreenLine((0, pygameWindowDepth / 2), (pygameWindowWidth, pygameWindowDepth / 2), 4)
+    pygameWindow.drawGreenLine((pygameWindowDepth / 2, 0), (pygameWindowDepth / 2, pygameWindowDepth / 2), 4)
+    pygameWindow.setBackButton()
+    back = pygameWindow.checkMouseEventsAdd()
+    if back == "back":
+        HandleStateStart()
+        programState = -1
+    font = pygameWindow.font
+    mode = font.render('You are currently in ' + selection + ' mode', False, (0, 0, 0))
+    pygameWindow.screen.blit(mode, (pygameWindowWidth / 25, pygameWindowDepth / 2 + 100))
+    goBack = font.render('Click the button below to return to the selection screen', False, (0, 0, 0))
+    pygameWindow.screen.blit(goBack, (pygameWindowWidth / 25, pygameWindowDepth / 2 + 120))
     pygameWindow.setImage(handImage)
     frame = controller.frame()
+    saveSessionStats()
+    print selection
     if len(frame.hands) > 0:
         programState = 1
 
 
 def HandleState1():
     global controller, programState
+    pygameWindow.drawGreenLine((0, pygameWindowDepth / 2), (pygameWindowWidth, pygameWindowDepth / 2), 4)
+    pygameWindow.drawGreenLine((pygameWindowDepth / 2, 0), (pygameWindowDepth / 2, pygameWindowDepth / 2), 4)
     frame = controller.frame()
     pygameWindow.setImage(leftImage)
     hand = frame.hands[0]
     fingers = hand.fingers
+    saveSessionStats()
     for finger in fingers:
         handleFinger(finger, k)
 
@@ -145,12 +217,38 @@ def HandleState1():
         programState = 0
 
 
-
 def HandleState2():
-    global controller, k, framesHeld, userName, totalCorrect, counter, errorCounter, signedCorrect, signedWrong, randomNum, programState, testData
+    global controller, k, framesHeld, userName, sessionTotal, sessionCorrect, totalCorrect, counter, errorCounter, \
+        signedCorrect, signedWrong, randomNum, programState, testData, lastSessionCorrect, lastSessionTotal, careerCorrect, \
+        careerAttempts, averageTotal, averageRight
+    pygameWindow.drawGreenLine((0, pygameWindowDepth / 2), (pygameWindowWidth, pygameWindowDepth / 2), 4)
+    pygameWindow.drawGreenLine((pygameWindowDepth / 2, 0), (pygameWindowDepth / 2, pygameWindowDepth / 2), 4)
 
     setSigns(randomNum)
+    myfont = pygame.font.SysFont('Comic Sans MS', 14)
 
+    saveSessionStats()
+    if sessionTotal == 0:
+        currSesh = myfont.render('Current Session Accuracy: 0.0%', False, (0, 0, 0))
+        pygameWindow.screen.blit(currSesh, (pygameWindowWidth / 25, pygameWindowDepth / 2+ 100))
+    elif sessionTotal > 0:
+        currSesh = myfont.render('Current Session Accuracy: ' + str( '%.1f' % ((sessionCorrect / sessionTotal) * 100.0)) + "%", False, (0, 0, 0))
+        pygameWindow.screen.blit(currSesh, (pygameWindowWidth / 25, pygameWindowDepth / 2+ 100))
+    if lastSessionTotal == 0:
+        lastSesh = myfont.render('Last Session Accuracy: 0.0%', False, (0, 0, 0))
+        pygameWindow.screen.blit(lastSesh, (pygameWindowWidth / 25, (pygameWindowDepth / 2 + 120)))
+    elif lastSessionTotal > 0:
+        lastSesh = myfont.render('Last Session Accuracy: ' + str('%.1f' % ((lastSessionCorrect / lastSessionTotal) * 100.0)) + "%", False,
+                                 (0, 0, 0))
+        pygameWindow.screen.blit(lastSesh, (pygameWindowWidth / 25, (pygameWindowDepth / 2 + 120)))
+
+    if averageTotal == 0:
+        ave = myfont.render('Average Accuracy of All Users: 0%', False, (0, 0, 0))
+        pygameWindow.screen.blit(ave, (pygameWindowWidth / 25, (pygameWindowDepth / 2 + 140)))
+    elif averageTotal > 0:
+        ave = myfont.render('Average Accuracy of All Users: ' + str('%1.f' % ((averageRight / averageTotal) * 100.0)) + "%",
+                            False, (0, 0, 0))
+        pygameWindow.screen.blit(ave, (pygameWindowWidth / 25, (pygameWindowDepth / 2 + 140)))
     frame = controller.frame()
     hand = frame.hands[0]
     if len(frame.hands) == 0:
@@ -210,45 +308,80 @@ def HandleState2():
         else:
             counter = 0
             errorCounter += 1
+    elif randomNum == 7:
+        if predictedClass == 4:
+            counter += 1
+            errorCounter = 0
+        else:
+            counter = 0
+            errorCounter += 1
+    elif randomNum == 8:
+        if predictedClass == 6:
+            counter += 1
+            errorCounter = 0
+        else:
+            counter = 0
+            errorCounter += 1
+    elif randomNum == 9:
+        if predictedClass == 7:
+            counter += 1
+            errorCounter = 0
+        else:
+            counter = 0
+            errorCounter += 1
+    elif randomNum == 10:
+        if predictedClass == 9:
+            counter += 1
+            errorCounter = 0
+        else:
+            counter = 0
+            errorCounter += 1
 
-    if counter >= 5 and totalCorrect > 0:
-        pygameWindow.setSign(whiteImage)
+    # if counter >= 5 and totalCorrect > 0:
+    #     pygameWindow.setSign(whiteImage)
+    #
+    # if counter >= 3 and totalCorrect > 1:
+    #     pygameWindow.setSign(whiteImage)
+    #
+    # if counter >= 0 and totalCorrect > 2:
+    #     pygameWindow.setSign(whiteImage)
 
-    if counter >= 3 and totalCorrect > 1:
-        pygameWindow.setSign(whiteImage)
-
-    if counter >= 0 and totalCorrect > 2:
-        pygameWindow.setSign(whiteImage)
-
-    if (counter >= 10 and totalCorrect == 0):
-        handleCorrectResponse(randomNum)
+    helpFont = pygame.font.SysFont('Comic Sans MS', 20)
+    if 0 < counter < 10:
+        warmer = helpFont.render("Warmer", False, (255, 0, 0))
+        pygameWindow.screen.blit(warmer, (pygameWindowWidth / 25, (pygameWindowDepth / 2)))
+    if 0 < errorCounter < 20:
+        colder = helpFont.render("Colder", False, (0, 0, 255))
+        pygameWindow.screen.blit(colder, (pygameWindowWidth / 25, (pygameWindowDepth / 2)))
+    if counter >= 10 and totalCorrect == 0:
+        sessionCorrect += 1
+        sessionTotal += 1
+        database[userName]['totalCorrect'] += 1
+        database[userName]['totalAttempted'] += 1
+        handleCorrectResponse()
     elif counter >= 8 and totalCorrect > 0:
-        handleCorrectResponse(randomNum)
+        sessionCorrect += 1
+        sessionTotal += 1
+        database[userName]['totalCorrect'] += 1
+        database[userName]['totalAttempted'] += 1
+        handleCorrectResponse()
     elif counter >= 6 and totalCorrect > 1:
-        handleCorrectResponse(randomNum)
+        sessionCorrect += 1
+        sessionTotal += 1
+        database[userName]['totalCorrect'] += 1
+        database[userName]['totalAttempted'] += 1
+        handleCorrectResponse()
     elif counter >= 4 and totalCorrect > 2:
-        handleCorrectResponse(randomNum)
+        sessionCorrect += 1
+        sessionTotal += 1
+        database[userName]['totalCorrect'] += 1
+        database[userName]['totalAttempted'] += 1
+        handleCorrectResponse()
 
     if errorCounter >= 20:
-        if randomNum == 1:
-            database[userName]['digit5attempted'] += 1
-            print database[userName]['digit5attempted']
-        elif randomNum == 2:
-            database[userName]['digit0attempted'] += 1
-            print database[userName]['digit0attempted']
-        elif randomNum == 3:
-            database[userName]['digit1attempted'] += 1
-            print database[userName]['digit1attempted']
-        elif randomNum == 4:
-            database[userName]['digit2attempted'] += 1
-            print database[userName]['digit2attempted']
-        elif randomNum == 5:
-            database[userName]['digit3attempted'] += 1
-            print database[userName]['digit3attempted']
-        elif randomNum == 6:
-            database[userName]['digit8attempted'] += 1
-            print database[userName]['digit8attempted']
-
+        sessionTotal += 1
+        database[userName]['totalAttempted'] += 1
+        logAttempts()
         pygameWindow.setImage(wrongImage)
         programState = 3
         counter = 0
@@ -256,65 +389,30 @@ def HandleState2():
         signedWrong += 1
         pickle.dump(database, open('userData/database.p', 'wb'))
 
-    myfont = pygame.font.SysFont('Comic Sans MS', 20)
-    title = myfont.render('Attempts', False, (0, 0, 0))
-    pygameWindow.screen.blit(title, (pygameWindowWidth / 10, pygameWindowDepth / 2))
-    zero = myfont.render('Zero - ' + str(database[userName]['digit0attempted']), False, (0, 0, 0))
-    pygameWindow.screen.blit(zero, (pygameWindowWidth / 10, pygameWindowDepth / 2 + 20))
-    one = myfont.render('One - ' + str(database[userName]['digit1attempted']), False, (0, 0, 0))
-    pygameWindow.screen.blit(one, (pygameWindowWidth / 10, pygameWindowDepth / 2 + 40))
-    two = myfont.render('Two - ' + str(database[userName]['digit2attempted']), False, (0, 0, 0))
-    pygameWindow.screen.blit(two, (pygameWindowWidth / 10, pygameWindowDepth / 2 + 60))
-    three = myfont.render('Three - ' + str(database[userName]['digit3attempted']), False, (0, 0, 0))
-    pygameWindow.screen.blit(three, (pygameWindowWidth / 10, pygameWindowDepth / 2 + 80))
-    four = myfont.render('Four - ' + str(database[userName]['digit4attempted']), False, (0, 0, 0))
-    pygameWindow.screen.blit(four, (pygameWindowWidth / 10, pygameWindowDepth / 2 + 100))
-    five = myfont.render('Five - ' + str(database[userName]['digit5attempted']), False, (0, 0, 0))
-    pygameWindow.screen.blit(five, (pygameWindowWidth / 10, pygameWindowDepth / 2 + 120))
-    six = myfont.render('Six - ' + str(database[userName]['digit6attempted']), False, (0, 0, 0))
-    pygameWindow.screen.blit(six, (pygameWindowWidth / 10, pygameWindowDepth / 2 + 140))
-    seven = myfont.render('Seven - ' + str(database[userName]['digit7attempted']), False, (0, 0, 0))
-    pygameWindow.screen.blit(seven, (pygameWindowWidth / 10, pygameWindowDepth / 2 + 160))
-    eight = myfont.render('Eight - ' + str(database[userName]['digit8attempted']), False, (0, 0, 0))
-    pygameWindow.screen.blit(eight, (pygameWindowWidth / 10, pygameWindowDepth / 2 + 180))
-    nine = myfont.render('Nine - ' + str(database[userName]['digit9attempted']), False, (0, 0, 0))
-    pygameWindow.screen.blit(nine, (pygameWindowWidth / 10, pygameWindowDepth / 2 + 200))
-
 def HandleState3():
-    global controller, programState, seconds, frame, randomNum
+    pygameWindow.drawGreenLine((0, pygameWindowDepth / 2), (pygameWindowWidth, pygameWindowDepth / 2), 4)
+    pygameWindow.drawGreenLine((pygameWindowDepth / 2, 0), (pygameWindowDepth / 2, pygameWindowDepth / 2), 4)
+    global controller, programState, seconds, frame, randomNum, sessionCorrect, sessionTotal, database
     time.sleep(3)
+    saveSessionStats()
     if len(frame.hands) == 1:
         programState = 2
     elif len(frame.hands) == 0:
         programState = 1
+
+def saveSessionStats():
+    global database, sessionCorrect, sessionTotal
+    database[userName]['lastSessionCorrect'] = sessionCorrect
+    database[userName]['lastSessionTotal'] = sessionTotal
 
 
 xMin = 1000.0
 xMax = -1000.0
 yMin = 1000.0
 yMax = -1000.0
-
-def handleCorrectResponse(randomNumber):
+def handleCorrectResponse():
     global controller, k, framesHeld, userName, totalCorrect, counter, errorCounter, signedCorrect, signedWrong, randomNum, programState, testData
-    if randomNum == 1:
-        database[userName]['digit5attempted'] += 1
-        print database[userName]['digit5attempted']
-    elif randomNum == 2:
-        database[userName]['digit0attempted'] += 1
-        print database[userName]['digit0attempted']
-    elif randomNum == 3:
-        database[userName]['digit1attempted'] += 1
-        print database[userName]['digit1attempted']
-    elif randomNum == 4:
-        database[userName]['digit2attempted'] += 1
-        print database[userName]['digit2attempted']
-    elif randomNum == 5:
-        database[userName]['digit3attempted'] += 1
-        print database[userName]['digit3attempted']
-    elif randomNum == 6:
-        database[userName]['digit8attempted'] += 1
-        print database[userName]['digit8attempted']
-
+    logAttempts()
     pygameWindow.setImage(successImage)
     signedCorrect += 1
     totalCorrect += 1
@@ -323,15 +421,38 @@ def handleCorrectResponse(randomNumber):
     errorCounter = 0
     if signedWrong >= 3:
         if signedCorrect >= 3:
-            # randomNum = random.randint(1, 6)
+            randomNum = random.randint(1, 10)
             signedCorrect = 0
             signedWrong = 0
     elif signedWrong < 3 and signedCorrect > 0:
-        # randomNum = random.randint(1, 6)
+        randomNum = random.randint(1, 10)
         signedCorrect = 0
         signedWrong = 0
 
     pickle.dump(database, open('userData/database.p', 'wb'))
+
+def logAttempts():
+    global database, randomNum
+    if randomNum == 1:
+        database[userName]['digit5attempted'] += 1
+    elif randomNum == 2:
+        database[userName]['digit0attempted'] += 1
+    elif randomNum == 3:
+        database[userName]['digit1attempted'] += 1
+    elif randomNum == 4:
+        database[userName]['digit2attempted'] += 1
+    elif randomNum == 5:
+        database[userName]['digit3attempted'] += 1
+    elif randomNum == 6:
+        database[userName]['digit8attempted'] += 1
+    elif randomNum == 7:
+        database[userName]['digit4attempted'] += 1
+    elif randomNum == 8:
+        database[userName]['digit6attempted'] += 1
+    elif randomNum == 9:
+        database[userName]['digit7attempted'] += 1
+    elif randomNum == 10:
+        database[userName]['digit9attempted'] += 1
 
 def handleFrame():
     global x, y, xMin, xMax, yMin, yMax, tip, pygameWindowWidth, pygameWindowDepth
@@ -449,6 +570,18 @@ def setSigns(randomNum):
     elif randomNum == 6:
         pygameWindow.setSign(aslImage8)
         pygameWindow.setImage(eightImage)
+    elif randomNum == 7:
+        pygameWindow.setSign(aslFourImage)
+        pygameWindow.setImage(fourImage)
+    elif randomNum == 8:
+        pygameWindow.setSign(aslSixImage)
+        pygameWindow.setImage(sixImage)
+    elif randomNum == 9:
+        pygameWindow.setSign(aslSevenImage)
+        pygameWindow.setImage(sevenImage)
+    elif randomNum == 10:
+        pygameWindow.setSign(aslNineImage)
+        pygameWindow.setImage(nineImage)
 
 
 def CenterData(data):
@@ -466,14 +599,17 @@ def CenterData(data):
 
     return data
 
-
 controller = Leap.Controller()
 frame = controller.frame()
 start_ticks = pygame.time.get_ticks()
 
-userName = raw_input('Please enter your name: ')
 if userName in database:
     database[userName]['logins'] += 1
+    lastSessionCorrect = database[userName]['lastSessionCorrect'] + 1
+    lastSessionTotal = database[userName]['lastSessionTotal'] + 1
+    for key in database:
+        averageRight += database[key]['totalCorrect']
+        averageTotal += database[key]['totalAttempted']
     nameEntered = True
 
     print 'welcome back ' + userName + '.'
@@ -490,7 +626,16 @@ else:
     database[userName]['digit7attempted'] = 0
     database[userName]['digit8attempted'] = 0
     database[userName]['digit9attempted'] = 0
+    database[userName]['lastSessionCorrect'] = 0
+    database[userName]['lastSessionTotal'] = 0
+    database[userName]['totalCorrect'] = 0.0
+    database[userName]['totalAttempted'] = 0.0
+    lastSessionCorrect = 0.0
+    lastSessionTotal = 0.0
     print 'welcome ' + userName + '.'
+    for key in database:
+        averageRight += database[key]['totalCorrect']
+        averageTotal += database[key]['totalAttempted']
     nameEntered = True
 print randomNum
 print database
@@ -499,9 +644,12 @@ pickle.dump(database, open('userData/database.p', 'wb'))
 # infinite loop
 while True:
     if nameEntered:
+        saveSessionStats()
         pygameWindow = PYGAME_WINDOW()
         pygameWindow.prepare()
-        if programState == 0:
+        if programState == -1:
+            HandleStateStart()
+        elif programState == 0:
             HandleState0()
         elif programState == 1:
             HandleState1()
@@ -513,7 +661,5 @@ while True:
         if len(frame.hands) > 0:
             k = 0
 
-        pygameWindow.drawGreenLine((0, pygameWindowDepth / 2), (pygameWindowWidth, pygameWindowDepth / 2), 4)
-        pygameWindow.drawGreenLine((pygameWindowDepth / 2, 0), (pygameWindowDepth / 2, pygameWindowDepth / 2), 4)
         pygameWindow.reveal()
-    # print programState
+
