@@ -154,51 +154,49 @@ errorCounter = 0
 signedCorrect = 0
 signedWrong = 0
 sessionCorrect = 0.0
-sessionTotal = 0.0
+sessionTotal = 1.0
 careerCorrect = 0.0
 careerAttempts = 0.0
 averageRight = 0.0
 averageTotal = 0.0
-totalCorrect = 0
+totalCorrect = 1
 randomNum = random.randint(1, 10)
 randomVar1 = random.randint(1, 10)
 randomVar2 = random.randint(1, 10)
-programState = -1
+programState = 0
 userName = raw_input('Please enter your name: ')
-selection = ""
+selection = random.randint(1, 2)
 
-def HandleStateStart():
-    global selection, programState
-    pygameWindow.setButton()
-
-    selected = pygameWindow.checkMouseEventsAdd()
-
-    if selected == "add":
-        selection = "addition"
-        programState = 0
-
-    if selected == "sub":
-        selection = "subtraction"
-        programState = 0
+# def HandleStateStart():
+#     global selection, programState
+#     pygameWindow.setButton()
+#
+#     selected = pygameWindow.checkMouseEventsAdd()
+#
+#     if selected == "add":
+#         selection = "addition"
+#         programState = 0
+#
+#     if selected == "sub":
+#         selection = "subtraction"
+#         programState = 0
 
 def HandleState0():
     global controller, programState, selection
     pygameWindow.drawGreenLine((0, pygameWindowDepth / 2), (pygameWindowWidth, pygameWindowDepth / 2), 4)
     pygameWindow.drawGreenLine((pygameWindowDepth / 2, 0), (pygameWindowDepth / 2, pygameWindowDepth / 2), 4)
-    pygameWindow.setBackButton()
-    back = pygameWindow.checkMouseEventsAdd()
-    if back == "back":
-        HandleStateStart()
-        programState = -1
-    font = pygameWindow.font
-    mode = font.render('You are currently in ' + selection + ' mode', False, (0, 0, 0))
-    pygameWindow.screen.blit(mode, (pygameWindowWidth / 25, pygameWindowDepth / 2 + 100))
-    goBack = font.render('Click the button below to return to the selection screen', False, (0, 0, 0))
-    pygameWindow.screen.blit(goBack, (pygameWindowWidth / 25, pygameWindowDepth / 2 + 120))
+    # back = pygameWindow.checkMouseEventsAdd()
+    # if back == "back":
+    #     HandleStateStart()
+    #     programState = -1
+    # font = pygameWindow.font
+    # mode = font.render('You are currently in ' + selection + ' mode', False, (0, 0, 0))
+    # pygameWindow.screen.blit(mode, (pygameWindowWidth / 25, pygameWindowDepth / 2 + 100))
+    # goBack = font.render('Click the button below to return to the selection screen', False, (0, 0, 0))
+    # pygameWindow.screen.blit(goBack, (pygameWindowWidth / 25, pygameWindowDepth / 2 + 120))
     pygameWindow.setImage(handImage)
     frame = controller.frame()
     saveSessionStats()
-    print selection
     if len(frame.hands) > 0:
         programState = 1
 
@@ -226,33 +224,42 @@ def HandleState2():
     pygameWindow.drawGreenLine((0, pygameWindowDepth / 2), (pygameWindowWidth, pygameWindowDepth / 2), 4)
     pygameWindow.drawGreenLine((pygameWindowDepth / 2, 0), (pygameWindowDepth / 2, pygameWindowDepth / 2), 4)
     
-    if selection == "addition":
-        while randomVar1 + randomVar2 > 9:
+    if selection == 1:
+        while (randomVar1 + randomVar2 > 9):
             randomVar1 = random.randint(1, 10)
             randomVar2 = random.randint(1, 10)
         randomNum = randomVar1 + randomVar2
-    elif selection == "subtraction":
-        while randomVar1 - randomVar2 < 0 or randomVar1 - randomVar2 > 9:
-            randomVar1 = random.randInt(1, 20)
+    elif selection == 2:
+        while (randomVar1 - randomVar2 < 0 or randomVar1 - randomVar2 > 9):
+            randomVar1 = random.randint(1, 20)
             randomVar2 = random.randint(1, 20)
-        randomNum = randomVar1 + randomVar2
+        randomNum = randomVar1 - randomVar2
 
+    numFont = pygame.font.SysFont('Arial', 32)
     myfont = pygame.font.SysFont('Comic Sans MS', 14)
 
+    if ((totalCorrect / sessionTotal) * 100) >= 75 and totalCorrect < 3:
+        setSigns(randomNum)
+    elif ((totalCorrect / sessionTotal) * 100) < 75 and totalCorrect >= 3:
+        setSigns(randomNum)
+
     saveSessionStats()
-    
-    if selection == "addition":
-        addProblem = myfont.render(randomVar1 + ' + ' + randomVar2, False, (0, 0, 0))
-        pygameWindow.screen.blit(addProblem, (pygameWindowWidth / 2, pygameWindowDepth + 50))
-    elif selection == "subtraction":
-        subProblem = myfont.render(randomVar1 + ' - ' + randomVar2, False, (0, 0, 0))
-        pygameWindow.screen.blit(subProblem, (pygameWindowWidth / 2, pygameWindowDepth / 2 + 50))
+    print randomNum
+
+    if selection == 1 and ((totalCorrect / sessionTotal) * 100) >= 75 and totalCorrect >= 3:
+        setImagesOnly(randomNum)
+        addProblem = numFont.render(str(randomVar1) + ' + ' + str(randomVar2), False, (0, 0, 0))
+        pygameWindow.screen.blit(addProblem, (pygameWindowWidth / 2, pygameWindowDepth / 2))
+    if selection == 2 and ((totalCorrect / sessionTotal) * 100) >= 75 and totalCorrect >= 3:
+        setImagesOnly(randomNum)
+        subProblem = numFont.render(str(randomVar1) + ' - ' + str(randomVar2), False, (0, 0, 0))
+        pygameWindow.screen.blit(subProblem, (pygameWindowWidth / 2, pygameWindowDepth / 2))
     if sessionTotal == 0:
         currSesh = myfont.render('Current Session Accuracy: 0.0%', False, (0, 0, 0))
-        pygameWindow.screen.blit(currSesh, (pygameWindowWidth / 25, pygameWindowDepth / 2+ 100))
+        pygameWindow.screen.blit(currSesh, (pygameWindowWidth / 25, pygameWindowDepth / 2 + 100))
     elif sessionTotal > 0:
         currSesh = myfont.render('Current Session Accuracy: ' + str( '%.1f' % ((sessionCorrect / sessionTotal) * 100.0)) + "%", False, (0, 0, 0))
-        pygameWindow.screen.blit(currSesh, (pygameWindowWidth / 25, pygameWindowDepth / 2+ 100))
+        pygameWindow.screen.blit(currSesh, (pygameWindowWidth / 25, pygameWindowDepth / 2 + 100))
     if lastSessionTotal == 0:
         lastSesh = myfont.render('Last Session Accuracy: 0.0%', False, (0, 0, 0))
         pygameWindow.screen.blit(lastSesh, (pygameWindowWidth / 25, (pygameWindowDepth / 2 + 120)))
@@ -355,15 +362,24 @@ def HandleState2():
         else:
             counter = 0
             errorCounter += 1
+    if totalCorrect < 3:
+        if counter >= 5 and totalCorrect > 0:
+            pygameWindow.setSign(whiteImage)
 
-    # if counter >= 5 and totalCorrect > 0:
-    #     pygameWindow.setSign(whiteImage)
+        if counter >= 3 and totalCorrect > 1:
+            pygameWindow.setSign(whiteImage)
+
+        if counter >= 0 and totalCorrect > 2:
+            pygameWindow.setSign(whiteImage)
+
+    # if counter >= 5 and totalCorrect > 4:
+    #     pygameWindow.setImage(whiteImage)
     #
-    # if counter >= 3 and totalCorrect > 1:
-    #     pygameWindow.setSign(whiteImage)
+    # if counter >= 3 and totalCorrect > 5:
+    #     pygameWindow.setImage(whiteImage)
     #
-    # if counter >= 0 and totalCorrect > 2:
-    #     pygameWindow.setSign(whiteImage)
+    # if counter >= 0 and totalCorrect > 6:
+    #     pygameWindow.setImage(whiteImage)
 
     helpFont = pygame.font.SysFont('Comic Sans MS', 20)
     if 0 < counter < 10:
@@ -430,9 +446,11 @@ xMax = -1000.0
 yMin = 1000.0
 yMax = -1000.0
 def handleCorrectResponse():
-    global controller, k, framesHeld, userName, totalCorrect, counter, errorCounter, signedCorrect, signedWrong, randomNum, programState, testData
+    global controller, k, framesHeld, userName, totalCorrect, counter, errorCounter, signedCorrect, signedWrong,\
+        randomNum, programState, testData, randomVar1, randomVar2, selection
     logAttempts()
     pygameWindow.setImage(successImage)
+    selection = random.randint(1,2)
     signedCorrect += 1
     totalCorrect += 1
     programState = 3
@@ -441,10 +459,14 @@ def handleCorrectResponse():
     if signedWrong >= 3:
         if signedCorrect >= 3:
             randomNum = random.randint(1, 10)
+            randomVar1 = random.randint(1, 10)
+            randomVar2 = random.randint(1, 10)
             signedCorrect = 0
             signedWrong = 0
     elif signedWrong < 3 and signedCorrect > 0:
         randomNum = random.randint(1, 10)
+        randomVar1 = random.randint(1, 10)
+        randomVar2 = random.randint(1, 10)
         signedCorrect = 0
         signedWrong = 0
 
@@ -570,6 +592,29 @@ def handleVectorFromLeap(v):
 
     return pygameX, pygameY
 
+def setImagesOnly(randomNum):
+        if randomNum == 1:
+            pygameWindow.setImage(newImage)
+        elif randomNum == 2:
+            pygameWindow.setImage(twoImage)
+        elif randomNum == 3:
+            pygameWindow.setImage(threeImage)
+        elif randomNum == 4:
+            pygameWindow.setImage(fourImage)
+        elif randomNum == 5:
+            pygameWindow.setImage(newImage3)
+        elif randomNum == 6:
+            pygameWindow.setImage(sixImage)
+        elif randomNum == 7:
+            pygameWindow.setImage(sevenImage)
+        elif randomNum == 8:
+            pygameWindow.setImage(eightImage)
+        elif randomNum == 9:
+            pygameWindow.setImage(nineImage)
+        elif randomNum == 10:
+            pygameWindow.setImage(newImage2)
+
+
 def setSigns(randomNum):
     if randomNum == 1:
         pygameWindow.setSign(aslImage1)
@@ -584,7 +629,7 @@ def setSigns(randomNum):
         pygameWindow.setSign(aslFourImage)
         pygameWindow.setImage(fourImage)
     elif randomNum == 5:
-        pygameWindow.setSign(aslImage5)
+        pygameWindow.setSign(aslFive)
         pygameWindow.setImage(newImage3)
     elif randomNum == 6:
         pygameWindow.setSign(aslSixImage)
@@ -593,13 +638,13 @@ def setSigns(randomNum):
         pygameWindow.setSign(aslSevenImage)
         pygameWindow.setImage(sevenImage)
     elif randomNum == 8:
-        pygameWindow.setSign(aslEightImage)
+        pygameWindow.setSign(aslImage8)
         pygameWindow.setImage(eightImage)
     elif randomNum == 9:
         pygameWindow.setSign(aslNineImage)
-        pygameWindow.setImage(sevenImage)
+        pygameWindow.setImage(nineImage)
     elif randomNum == 10:
-        pygameWindow.setSign(aslImage)
+        pygameWindow.setSign(aslZero)
         pygameWindow.setImage(newImage2)
 
 
@@ -666,9 +711,7 @@ while True:
         saveSessionStats()
         pygameWindow = PYGAME_WINDOW()
         pygameWindow.prepare()
-        if programState == -1:
-            HandleStateStart()
-        elif programState == 0:
+        if programState == 0:
             HandleState0()
         elif programState == 1:
             HandleState1()

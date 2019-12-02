@@ -10,8 +10,7 @@ addButton = pygame.Rect((pygameWindowWidth / 2) - 60, pygameWindowDepth / 2, pyg
 subButton = pygame.Rect((pygameWindowWidth / 2) - 60, (pygameWindowDepth / 2) + 80, pygameWindowWidth / 4,
                         pygameWindowDepth / 8)
 
-backButton = pygame.Rect((pygameWindowWidth / 2) - 60, (pygameWindowDepth / 2) + 80, pygameWindowWidth / 4,
-                        pygameWindowDepth / 8)
+backButton = pygame.Rect((pygameWindowWidth / 6) - 60, (pygameWindowDepth / 6) + 320, pygameWindowWidth / 4, pygameWindowDepth / 8)
 
 
 class PYGAME_WINDOW:
@@ -55,7 +54,7 @@ class PYGAME_WINDOW:
     def setBackButton(self):
         pygame.draw.rect(self.screen, black, backButton)
         self.screen.blit(self.font.render('Back', True, (255, 0, 0)),
-                         ((pygameWindowWidth / 2) - 60, (pygameWindowDepth / 2) + 80))
+                         ((pygameWindowWidth / 6) - 60, (pygameWindowDepth / 6) + 320))
 
     def checkMouseEventsAdd(self):
         for event in pygame.event.get():
